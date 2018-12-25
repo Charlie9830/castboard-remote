@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import CastChangeEntryFactory from '../factories/CastChangeEntryFactory';
 
-const baseURL = 'http://192.168.168.2:8081';
+const baseURL = process.env.NODE_ENV === "development" ? 'http://localhost:8081' : window.location.href;
 
 let formatPath = (path) => {
     return baseURL + path;
