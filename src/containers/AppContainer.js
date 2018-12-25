@@ -2,13 +2,14 @@ import React from 'react';
 import App from '../components/App';
 import { CssBaseline } from '@material-ui/core';
 import axios from 'axios';
+import url from 'url';
 
 import CastChangeEntryFactory from '../factories/CastChangeEntryFactory';
 
 const baseURL = process.env.NODE_ENV === "development" ? 'http://localhost:8081' : window.location.href;
 
 let formatPath = (path) => {
-    return baseURL + path;
+    return url.resolve(baseURL, path);
 }
 
 class AppContainer extends React.Component {
