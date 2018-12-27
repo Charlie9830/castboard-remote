@@ -81,7 +81,8 @@ class AppContainer extends React.Component {
                 logs={this.state.logs}
                 isLogViewerOpen={this.state.isLogViewerOpen}
                 onCopyLogsButtonClick={this.handleCopyLogsButtonClick}
-                onLogViewerCloseButtonClick={this.handleLogViewerCloseButtonClick}/>
+                onLogViewerCloseButtonClick={this.handleLogViewerCloseButtonClick}
+                />
             </React.Fragment>
             
         )

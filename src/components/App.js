@@ -48,6 +48,7 @@ class App extends React.Component {
                 <Drawer open={this.props.isSettingsMenuOpen} anchor="left" variant="persistent">
                     <SettingsMenu onBackArrowClick={this.props.onSettingsMenuBackArrowClick} 
                     onGetDebugLogsButtonClick={this.props.onGetDebugLogsButtonClick}
+                    
                     />
                 </Drawer>
 

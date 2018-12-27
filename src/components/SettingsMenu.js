@@ -1,8 +1,11 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Grid, List, ListItem, ListItemText, ListItemSecondaryAction,
+import { AppBar, Toolbar, Typography, IconButton, Grid, List, ListItem, ListItemText, ListItemSecondaryAction, ListItemIcon,
 Button,} from '@material-ui/core';
 
 import BackArrowIcon from '@material-ui/icons/ArrowBack';
+import CodeIcon from '@material-ui/icons/Code';
+import MemoryIcon from '@material-ui/icons/Memory';
+import InfoIcon from '@material-ui/icons/Info';
 
 class SettingsMenu extends React.Component {
     render() {
@@ -26,15 +29,22 @@ class SettingsMenu extends React.Component {
                     <Grid item>
                         <List>
                             <ListItem>
+                                <ListItemIcon>
+                                    <MemoryIcon/>
+                                </ListItemIcon>
                                 <ListItemText primary="Download debug logs." />
                                 <ListItemSecondaryAction>
                                     <Button variant="contained" onClick={this.props.onGetDebugLogsButtonClick}> Go </Button>
                                 </ListItemSecondaryAction>
                             </ListItem>
+
+                            <ListItem>
+                                <ListItemIcon>
+                                    <CodeIcon/>
+                                </ListItemIcon>
+                                <ListItemText secondary="Developed by Charlie Hall"/>
+                            </ListItem>
                         </List>
-                        <div style={{flex: 1}}>
-                            {this.props.logs}
-                        </div>
                     </Grid>
                 </Grid>
             </React.Fragment>
