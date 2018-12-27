@@ -10,7 +10,7 @@ import CastChangeEntryFactory from '../factories/CastChangeEntryFactory';
 const baseURL = process.env.NODE_ENV === "development" ? 'http://localhost:8081' : window.location.href;
 
 let formatPath = (path) => {
-    return url.resolve(baseURL, path);
+    return url.resolve(baseURL,path);
 }
 
 class AppContainer extends React.Component {
@@ -47,6 +47,7 @@ class AppContainer extends React.Component {
         this.handleGetDebugLogsButtonClick = this.handleGetDebugLogsButtonClick.bind(this);
         this.handleCopyLogsButtonClick = this.handleCopyLogsButtonClick.bind(this);
         this.handleLogViewerCloseButtonClick = this.handleLogViewerCloseButtonClick.bind(this);
+        this.handleSoftResetButtonClick = this.handleSoftResetButtonClick.bind(this);
     }
 
     componentDidMount() {
@@ -82,10 +83,17 @@ class AppContainer extends React.Component {
                 isLogViewerOpen={this.state.isLogViewerOpen}
                 onCopyLogsButtonClick={this.handleCopyLogsButtonClick}
                 onLogViewerCloseButtonClick={this.handleLogViewerCloseButtonClick}
-                />
+                onSoftResetButtonClick={this.handleSoftResetButtonClick}/>
             </React.Fragment>
             
         )
+    }
+
+    async handleSoftResetButtonClick() {
+        let data = {
+            type: 'SOFT_RESET'
+        }
+        let response = await axios.post(formatPath('/control'), data);
     }
 
     handleLogViewerCloseButtonClick() {

@@ -1,11 +1,13 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Grid, List, ListItem, ListItemText, ListItemSecondaryAction, ListItemIcon,
-Button,} from '@material-ui/core';
+Button,
+ListSubheader,} from '@material-ui/core';
 
 import BackArrowIcon from '@material-ui/icons/ArrowBack';
 import CodeIcon from '@material-ui/icons/Code';
 import MemoryIcon from '@material-ui/icons/Memory';
-import InfoIcon from '@material-ui/icons/Info';
+import BrokenIcon from '@material-ui/icons/SentimentVeryDissatisfied';
+import PowerIcon from '@material-ui/icons/PowerSettingsNew';
 
 class SettingsMenu extends React.Component {
     render() {
@@ -28,6 +30,21 @@ class SettingsMenu extends React.Component {
 
                     <Grid item>
                         <List>
+                            <ListSubheader> Control </ListSubheader>
+
+                            <ListItem>
+                                <ListItemIcon>
+                                    <BrokenIcon/>
+                                </ListItemIcon>
+
+                                <ListItemText primary="Soft reset Castboard"/>
+                                <ListItemSecondaryAction>
+                                    <Button variant="contained" onClick={this.props.onSoftResetButtonClick}> Reset </Button>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+
+                            <ListSubheader> Debug </ListSubheader>
+
                             <ListItem>
                                 <ListItemIcon>
                                     <MemoryIcon/>
@@ -37,6 +54,8 @@ class SettingsMenu extends React.Component {
                                     <Button variant="contained" onClick={this.props.onGetDebugLogsButtonClick}> Go </Button>
                                 </ListItemSecondaryAction>
                             </ListItem>
+
+                            <ListSubheader> About </ListSubheader>
 
                             <ListItem>
                                 <ListItemIcon>
