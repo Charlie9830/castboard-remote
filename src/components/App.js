@@ -1,9 +1,10 @@
 import React from 'react';
-import { AppBar, Toolbar, Grid, Typography, IconButton, Tabs, Tab, List, ListItem, ListSubheader, ListItemText,
+import { AppBar, Toolbar, Grid, Typography, IconButton, Tabs, Tab, List, ListItem, ListSubheader, ListItemText, Drawer,
 ListItemSecondaryAction,  } from '@material-ui/core';
 import CastMemberSelect from './CastMemberSelect';
 import CastGroupChooser from './CastGroupChooser';
 import OrchestraMemberSelect from './OrchestraMemberSelect';
+import LogViewer from './LogViewer';
 
 import GetCastIdFromMap from '../utilities/GetCastIdFromMap';
 import GetOrchestraIdFromMap from '../utilities/GetOrchestraIdFromMap';
@@ -14,6 +15,8 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import UploadIcon from '@material-ui/icons/CloudUpload';
+import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsMenu from './SettingsMenu';
 
 
 class App extends React.Component {
@@ -36,6 +39,19 @@ class App extends React.Component {
     render() {
         return (
             <React.Fragment>
+
+                <Drawer open={this.props.isLogViewerOpen} anchor="left" variant="persistent">
+                    <LogViewer logs={this.props.logs} onCopyLogsButtonClick={this.props.onCopyLogsButtonClick}
+                    onCloseButtonClick={this.props.onLogViewerCloseButtonClick}/>
+                </Drawer>
+
+                <Drawer open={this.props.isSettingsMenuOpen} anchor="left" variant="persistent">
+                    <SettingsMenu onBackArrowClick={this.props.onSettingsMenuBackArrowClick} 
+                    onGetDebugLogsButtonClick={this.props.onGetDebugLogsButtonClick}
+                    />
+                </Drawer>
+
+
                 <AppBar position="sticky">
                     <Toolbar>
                         <Typography variant="h6"> Castboard </Typography>
@@ -48,6 +64,10 @@ class App extends React.Component {
                         </IconButton>
                         <IconButton onClick={this.props.onUploadButtonClick}>
                             <UploadIcon/>
+                        </IconButton>
+
+                        <IconButton onClick={this.props.onSettingsButtonClick}>
+                            <SettingsIcon/>
                         </IconButton>
                         </Grid>
                         

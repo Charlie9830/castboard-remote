@@ -3,6 +3,7 @@ import App from '../components/App';
 import { CssBaseline } from '@material-ui/core';
 import axios from 'axios';
 import url from 'url';
+import copy from 'copy-text-to-clipboard';
 
 import CastChangeEntryFactory from '../factories/CastChangeEntryFactory';
 
@@ -26,6 +27,9 @@ class AppContainer extends React.Component {
             orchestraMembers: [],
             orchestraRoles: [],
             orchestraChangeMap: {},
+            isSettingsMenuOpen: false,
+            logs: [],
+            isLogViewerOpen: false,
         }
 
         // Method Bindings.
@@ -38,7 +42,11 @@ class AppContainer extends React.Component {
         this.handleNextSlideButtonClick = this.handleNextSlideButtonClick.bind(this);
         this.handleRefreshButtonClick = this.handleRefreshButtonClick.bind(this);
         this.handleOrchestraChange = this.handleOrchestraChange.bind(this);
-
+        this.handleSettingsMenuBackArrowClick = this.handleSettingsMenuBackArrowClick.bind(this);
+        this.handleSettingsButtonClick = this.handleSettingsButtonClick.bind(this);
+        this.handleGetDebugLogsButtonClick = this.handleGetDebugLogsButtonClick.bind(this);
+        this.handleCopyLogsButtonClick = this.handleCopyLogsButtonClick.bind(this);
+        this.handleLogViewerCloseButtonClick = this.handleLogViewerCloseButtonClick.bind(this);
     }
 
     componentDidMount() {
@@ -65,10 +73,60 @@ class AppContainer extends React.Component {
                 onPlayButtonClick={this.handlePlayButtonClick}
                 onNextSlideButtonClick={this.handleNextSlideButtonClick}
                 onRefreshButtonClick={this.handleRefreshButtonClick}
-                onOrchestraChange={this.handleOrchestraChange}/>
+                onOrchestraChange={this.handleOrchestraChange}
+                onSettingsButtonClick={this.handleSettingsButtonClick}
+                isSettingsMenuOpen={this.state.isSettingsMenuOpen}
+                onSettingsMenuBackArrowClick={this.handleSettingsMenuBackArrowClick}
+                onGetDebugLogsButtonClick={this.handleGetDebugLogsButtonClick}
+                logs={this.state.logs}
+                isLogViewerOpen={this.state.isLogViewerOpen}
+                onCopyLogsButtonClick={this.handleCopyLogsButtonClick}
+                onLogViewerCloseButtonClick={this.handleLogViewerCloseButtonClick}/>
             </React.Fragment>
             
         )
+    }
+
+    handleLogViewerCloseButtonClick() {
+        this.setState({
+            isLogViewerOpen: false,
+            isSettingsMenuOpen: true,
+        })
+    }
+
+    handleCopyLogsButtonClick() {
+        let text = this.buildLogsIntoText(this.state.logs)
+        copy(text);
+    }
+
+    buildLogsIntoText(logs) {
+        let returnString = '';
+
+        for (let line of logs) {
+            returnString += line + '\n';
+        }
+
+        return returnString;
+    }
+
+    async handleGetDebugLogsButtonClick() {
+        let response = await axios.get(formatPath('/logs'));
+        let data = response.data;
+        if (data !== undefined && data.logs !== undefined) {
+            this.setState({ 
+                logs: data.logs.split('\n').reverse(),
+                isLogViewerOpen: true,
+                isSettingsMenuOpen: false,
+             });
+        }
+    }
+
+    handleSettingsMenuBackArrowClick() {
+        this.setState({ isSettingsMenuOpen: false });
+    }
+
+    handleSettingsButtonClick() {
+        this.setState({ isSettingsMenuOpen: true });
     }
 
     handleRefreshButtonClick() {
