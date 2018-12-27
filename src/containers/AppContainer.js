@@ -143,23 +143,20 @@ class AppContainer extends React.Component {
     }
 
     async handlePreviousSlideButtonClick() {
-        let response = await axios.post(formatPath('/playback/prev'));
-        console.log(response);
+        await axios.post(formatPath('/playback/prev'));
     }
 
     async handlePauseButtonClick() {
-        let response = await axios.post(formatPath('/playback/pause'));
-        console.log(response);
+        await axios.post(formatPath('/playback/pause'));
     }
 
     async handlePlayButtonClick() {
-        let response = await axios.post(formatPath('/playback/play'));
-        console.log(response);
+        await axios.post(formatPath('/playback/play'));
     }
 
     async handleNextSlideButtonClick() {
-        let response = await axios.post(formatPath('/playback/next'));
-        console.log(response);
+        await axios.post(formatPath('/playback/next'));
+        
     }
 
     async handleUploadButtonClick() {
@@ -168,7 +165,7 @@ class AppContainer extends React.Component {
             orchestraChangeMap: this.state.orchestraChangeMap,
         }
 
-        let response = await axios.post(formatPath('/data'), data);
+        await axios.post(formatPath('/data'), data);
     }
 
     handleOrchestraChange(orchestraRoleId, orchestraMemberId) {
