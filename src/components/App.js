@@ -49,6 +49,7 @@ class App extends React.Component {
                     <SettingsMenu onBackArrowClick={this.props.onSettingsMenuBackArrowClick} 
                     onGetDebugLogsButtonClick={this.props.onGetDebugLogsButtonClick}
                     onSoftResetButtonClick={this.props.onSoftResetButtonClick}
+                    onFileUpload={this.props.onFileUpload}
                     />
                 </Drawer>
 

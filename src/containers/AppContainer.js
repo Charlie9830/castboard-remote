@@ -48,6 +48,7 @@ class AppContainer extends React.Component {
         this.handleCopyLogsButtonClick = this.handleCopyLogsButtonClick.bind(this);
         this.handleLogViewerCloseButtonClick = this.handleLogViewerCloseButtonClick.bind(this);
         this.handleSoftResetButtonClick = this.handleSoftResetButtonClick.bind(this);
+        this.handleFileUpload = this.handleFileUpload.bind(this);
     }
 
     componentDidMount() {
@@ -83,17 +84,33 @@ class AppContainer extends React.Component {
                 isLogViewerOpen={this.state.isLogViewerOpen}
                 onCopyLogsButtonClick={this.handleCopyLogsButtonClick}
                 onLogViewerCloseButtonClick={this.handleLogViewerCloseButtonClick}
-                onSoftResetButtonClick={this.handleSoftResetButtonClick}/>
+                onSoftResetButtonClick={this.handleSoftResetButtonClick}
+                onFileUpload={this.handleFileUpload}/>
             </React.Fragment>
             
         )
+    }
+
+    async handleFileUpload(file) {
+        if (file.type === "application/json") {
+            let formData = new FormData();
+
+            formData.append('showfile', file);
+
+            const config = {
+                headers: { 'content-type': 'multipart/form-data' }
+            }
+
+            await axios.post(formatPath('./showfile'), formData, config)
+        }
     }
 
     async handleSoftResetButtonClick() {
         let data = {
             type: 'SOFT_RESET'
         }
-        let response = await axios.post(formatPath('/control'), data);
+
+        await axios.post(formatPath('/control'), data);
     }
 
     handleLogViewerCloseButtonClick() {
