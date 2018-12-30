@@ -50,6 +50,8 @@ class App extends React.Component {
                     onGetDebugLogsButtonClick={this.props.onGetDebugLogsButtonClick}
                     onSoftResetButtonClick={this.props.onSoftResetButtonClick}
                     onFileUpload={this.props.onFileUpload}
+                    onPowerOffButtonClick={this.props.onPowerOffButtonClick}
+                    onHardResetButtonClick={this.props.onHardResetButtonClick}
                     />
                 </Drawer>
 

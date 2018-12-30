@@ -49,6 +49,8 @@ class AppContainer extends React.Component {
         this.handleLogViewerCloseButtonClick = this.handleLogViewerCloseButtonClick.bind(this);
         this.handleSoftResetButtonClick = this.handleSoftResetButtonClick.bind(this);
         this.handleFileUpload = this.handleFileUpload.bind(this);
+        this.handlePowerOffButtonClick = this.handlePowerOffButtonClick.bind(this);
+        this.handleHardResetButtonClick = this.handleHardResetButtonClick.bind(this);
     }
 
     componentDidMount() {
@@ -85,10 +87,28 @@ class AppContainer extends React.Component {
                 onCopyLogsButtonClick={this.handleCopyLogsButtonClick}
                 onLogViewerCloseButtonClick={this.handleLogViewerCloseButtonClick}
                 onSoftResetButtonClick={this.handleSoftResetButtonClick}
-                onFileUpload={this.handleFileUpload}/>
+                onFileUpload={this.handleFileUpload}
+                onPowerOffButtonClick={this.handlePowerOffButtonClick}
+                onHardResetButtonClick={this.handleHardResetButtonClick}/>
             </React.Fragment>
             
         )
+    }
+
+    async handleHardResetButtonClick() {
+            let data = {
+                type: 'HARD_RESET'
+            }
+    
+            await axios.post(formatPath('/control'), data);
+    }
+
+    async handlePowerOffButtonClick() {
+        let data = {
+            type: 'POWER_OFF'
+        }
+
+        await axios.post(formatPath('/control'), data);
     }
 
     async handleFileUpload(file) {

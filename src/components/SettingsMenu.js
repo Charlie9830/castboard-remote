@@ -5,7 +5,8 @@ Button, ListSubheader, Input, SvgIcon} from '@material-ui/core';
 import BackArrowIcon from '@material-ui/icons/ArrowBack';
 import CodeIcon from '@material-ui/icons/Code';
 import MemoryIcon from '@material-ui/icons/Memory';
-import BrokenIcon from '@material-ui/icons/SentimentVeryDissatisfied';
+import SoftResetIcon from '@material-ui/icons/SentimentDissatisfied';
+import HardResetIcon from '@material-ui/icons/SentimentVeryDissatisfied';
 import PowerIcon from '@material-ui/icons/PowerSettingsNew';
 import FileUploadButton from './FileUploadButton';
 
@@ -56,12 +57,34 @@ class SettingsMenu extends React.Component {
                             <ListSubheader> Control </ListSubheader>
                             <ListItem>
                                 <ListItemIcon>
-                                    <BrokenIcon />
+                                    <PowerIcon />
                                 </ListItemIcon>
 
-                                <ListItemText primary="Soft reset Castboard" />
+                                <ListItemText primary="Power off" />
+                                <ListItemSecondaryAction>
+                                    <Button variant="contained" onClick={this.props.onPowerOffButtonClick}> Off </Button>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+
+                            <ListItem>
+                                <ListItemIcon>
+                                    <SoftResetIcon />
+                                </ListItemIcon>
+
+                                <ListItemText primary="Soft reset" />
                                 <ListItemSecondaryAction>
                                     <Button variant="contained" onClick={this.props.onSoftResetButtonClick}> Reset </Button>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+
+                            <ListItem>
+                                <ListItemIcon>
+                                    <HardResetIcon />
+                                </ListItemIcon>
+
+                                <ListItemText primary="Hard Reset" />
+                                <ListItemSecondaryAction>
+                                    <Button variant="contained" onClick={this.props.onHardResetButtonClick}> Reset </Button>
                                 </ListItemSecondaryAction>
                             </ListItem>
 
