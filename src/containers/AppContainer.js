@@ -30,6 +30,9 @@ class AppContainer extends React.Component {
             isSettingsMenuOpen: false,
             logs: [],
             isLogViewerOpen: false,
+            isCheckingConnection: true,
+            isConnectionBad: false,
+            isConnectionValidationOverlayOpen: true,
         }
 
         // Method Bindings.
@@ -51,10 +54,27 @@ class AppContainer extends React.Component {
         this.handleFileUpload = this.handleFileUpload.bind(this);
         this.handlePowerOffButtonClick = this.handlePowerOffButtonClick.bind(this);
         this.handleHardResetButtonClick = this.handleHardResetButtonClick.bind(this);
+        this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+        this.pingServer = this.pingServer.bind(this);
+        this.handleConnectionValidationOverlayRetryButtonClick = this.handleConnectionValidationOverlayRetryButtonClick.bind(this);
+        this.setConnectionState = this.setConnectionState.bind(this);
     }
 
-    componentDidMount() {
-        this.getData();
+    async componentDidMount() {
+        document.addEventListener('visibilitychange', this.handleVisibilityChange, false)
+
+        // Ping Server and Collect Data or notify of connection problem.
+        let pingResult = await this.pingServer();
+        if (pingResult === true) {
+            // Connection is Good. Notify and Collect Data.
+            this.setConnectionState(true);
+            this.getData();
+        }
+
+        else {
+            // Connection is Bad. Notify.
+            this.setConnectionState(false);
+        }
     }
 
     render() {
@@ -89,10 +109,64 @@ class AppContainer extends React.Component {
                 onSoftResetButtonClick={this.handleSoftResetButtonClick}
                 onFileUpload={this.handleFileUpload}
                 onPowerOffButtonClick={this.handlePowerOffButtonClick}
-                onHardResetButtonClick={this.handleHardResetButtonClick}/>
+                onHardResetButtonClick={this.handleHardResetButtonClick}
+                isConnectionValidationOverlayOpen={this.state.isConnectionValidationOverlayOpen}
+                isConnectionBad={this.state.isConnectionBad}
+                isCheckingConnection={this.state.isCheckingConnection}
+                onConnectionValidationOverlayRetryButtonClick={this.handleConnectionValidationOverlayRetryButtonClick}/>
             </React.Fragment>
             
         )
+    }
+
+    async handleConnectionValidationOverlayRetryButtonClick() {
+        this.setState({ isCheckingConnection: true });
+        let pingResult = await this.pingServer();
+        this.setConnectionState(pingResult);
+    }
+
+    setConnectionState(isConnected) {
+        if (isConnected) {
+            this.setState({
+                isCheckingConnection: false,
+                isConnectionBad: false,
+                isConnectionValidationOverlayOpen: false,
+            })
+        }
+
+        else {
+            this.setState({ 
+                isCheckingConnection: false,
+                isConnectionBad: true,
+                isConnectionValidationOverlayOpen: true,
+            })
+        }
+    }
+
+    async handleVisibilityChange() {
+        // Page has been brought back to Foreground.
+        if (document.hidden === false) {
+            this.setState({ 
+                isCheckingConnection: true,
+                isConnectionValidationOverlayOpen: true,
+             })
+
+            let result = await this.pingServer();
+            this.setConnectionState(result);
+        }   
+    }
+
+    async pingServer() {
+        try {
+            let response = await axios.get(formatPath('/ping'));
+            if (response.data !== undefined && response.data.reply === "pong") {
+                return true;
+            }
+        }
+
+        catch(error) {
+            return false;
+        }
     }
 
     async handleHardResetButtonClick() {

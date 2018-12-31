@@ -17,6 +17,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import UploadIcon from '@material-ui/icons/CloudUpload';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SettingsMenu from './SettingsMenu';
+import ConnectionValidationOverlay from './ConnectionValidationOverlay';
 
 
 class App extends React.Component {
@@ -39,6 +40,10 @@ class App extends React.Component {
     render() {
         return (
             <React.Fragment>
+
+                <ConnectionValidationOverlay open={this.props.isConnectionValidationOverlayOpen} 
+                isCheckingConnection={this.props.isCheckingConnection} isConnectionBad={this.props.isConnectionBad}
+                onRetryButtonClick={this.props.onConnectionValidationOverlayRetryButtonClick}/>
 
                 <Drawer open={this.props.isLogViewerOpen} anchor="left" variant="persistent">
                     <LogViewer logs={this.props.logs} onCopyLogsButtonClick={this.props.onCopyLogsButtonClick}
