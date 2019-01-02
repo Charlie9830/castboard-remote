@@ -7,7 +7,7 @@ import copy from 'copy-text-to-clipboard';
 
 import CastChangeEntryFactory from '../factories/CastChangeEntryFactory';
 
-const baseURL = process.env.NODE_ENV === "development" ? 'http://192.168.0.10:8081' : window.location.href;
+const baseURL = process.env.NODE_ENV === "development" ? 'http://localhost:8081' : window.location.href;
 
 let formatPath = (path) => {
     return url.resolve(baseURL,path);
@@ -58,6 +58,7 @@ class AppContainer extends React.Component {
         this.pingServer = this.pingServer.bind(this);
         this.handleConnectionValidationOverlayRetryButtonClick = this.handleConnectionValidationOverlayRetryButtonClick.bind(this);
         this.setConnectionState = this.setConnectionState.bind(this);
+        this.handleGroupCastChange = this.handleGroupCastChange.bind(this);
     }
 
     async componentDidMount() {
@@ -113,10 +114,36 @@ class AppContainer extends React.Component {
                 isConnectionValidationOverlayOpen={this.state.isConnectionValidationOverlayOpen}
                 isConnectionBad={this.state.isConnectionBad}
                 isCheckingConnection={this.state.isCheckingConnection}
-                onConnectionValidationOverlayRetryButtonClick={this.handleConnectionValidationOverlayRetryButtonClick}/>
+                onConnectionValidationOverlayRetryButtonClick={this.handleConnectionValidationOverlayRetryButtonClick}
+                onGroupCastChange={this.handleGroupCastChange}/>
             </React.Fragment>
             
         )
+    }
+
+    async handleGroupCastChange(roleGroupId, castGroupId) {
+        let castMembers = [...this.state.castMembers];
+        let castChangeMap = {...this.state.castChangeMap};
+        let roles = [...this.state.roles];
+
+        let relatedCastMembers = castMembers.filter( item => {
+            return item.groupId === castGroupId;
+        })
+
+        let relatedRoles = roles.filter( item => {
+            return item.groupId === roleGroupId;
+        })
+
+        // Iterate through related Roles and Assign a Cast member from relatedCastMembers if such cast member exists.
+        relatedRoles.map( (item, index) => {
+            let castMember = relatedCastMembers[index];
+            if (castMember !== undefined) {
+                castChangeMap[item.uid] = CastChangeEntryFactory("group", castMember.uid, roleGroupId);
+            }
+        })
+
+        this.setState({ castChangeMap: castChangeMap });
+
     }
 
     async handleConnectionValidationOverlayRetryButtonClick() {
@@ -305,6 +332,7 @@ class AppContainer extends React.Component {
                 castMembers: data.castMembers,
                 castGroups: data.castGroups,
                 roles: data.roles,
+                roleGroups: data.roleGroups,
                 castChangeMap: data.castChangeMap,
                 orchestraMembers: data.orchestraMembers,
                 orchestraRoles: data.orchestraRoles,

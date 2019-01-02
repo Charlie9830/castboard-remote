@@ -161,10 +161,14 @@ class App extends React.Component {
                 return role.groupId === item.uid;
             })
 
+            let primaryTypographyProps = {
+                nowrap: 'true'
+            }
+
             let relatedRolesJSX = relatedRoles.map( (role, index) => {
                 return (
-                    <ListItem key={role.uid} style={{ paddingLeft: '64px' }}>
-                        <ListItemText primary={role.name} />
+                    <ListItem key={role.uid} style={{ paddingLeft: '8px' }}>
+                        <ListItemText primary={role.name} primaryTypographyProps={primaryTypographyProps}/>
                         <ListItemSecondaryAction>
                             <CastMemberSelect castMembers={this.props.castMembers}
                             value={GetCastIdFromMap(this.props.castChangeMap, role.uid)} />
