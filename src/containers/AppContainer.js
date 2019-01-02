@@ -7,7 +7,7 @@ import copy from 'copy-text-to-clipboard';
 
 import CastChangeEntryFactory from '../factories/CastChangeEntryFactory';
 
-const baseURL = process.env.NODE_ENV === "development" ? 'http://localhost:8081' : window.location.href;
+const baseURL = process.env.NODE_ENV === "development" ? 'http://192.168.0.10:8081' : window.location.href;
 
 let formatPath = (path) => {
     return url.resolve(baseURL,path);

@@ -4,14 +4,14 @@ import { Select, MenuItem } from '@material-ui/core';
 let CastMemberSelect = (props) => {
     let options = props.castMembers.map( item => {
         return (
-            <MenuItem key={item.uid} value={item.uid}> {item.name} </MenuItem>
+            <option key={item.uid} value={item.uid}> {item.name} </option>
         )
     });
 
-    options.unshift(<MenuItem key={-1} value={-1}> Track Cut </MenuItem>);
+    options.unshift(<option key={-1} value={-1}> Track Cut </option>);
 
     return (
-        <Select onChange={props.onChange} value={props.value}>
+        <Select native onChange={props.onChange} value={props.value}>
             {options}
         </Select>
     )
