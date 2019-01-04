@@ -11,7 +11,7 @@ let CastMemberSelect = (props) => {
     options.unshift(<option key={-1} value={-1}> Track Cut </option>);
 
     return (
-        <Select style={{background: 'white'}} native onChange={props.onChange} value={props.value}>
+        <Select style={{background: 'rgb(225,225,225)', width: '55%'}} native onChange={props.onChange} value={props.value}>
             {options}
         </Select>
     )

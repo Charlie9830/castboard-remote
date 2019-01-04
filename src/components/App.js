@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Grid, Typography, IconButton, Tabs, Tab, List, ListItem, ListSubheader, ListItemText, Drawer,
-ListItemSecondaryAction,  } from '@material-ui/core';
+ListItemSecondaryAction,
+Divider,  } from '@material-ui/core';
 import CastMemberSelect from './CastMemberSelect';
 import CastGroupChooser from './CastGroupChooser';
 import OrchestraMemberSelect from './OrchestraMemberSelect';
@@ -118,15 +119,23 @@ class App extends React.Component {
     }
 
     getOrchestraChangeItemsJSX() {
+        let typographyStyle = {
+            width: '45%',
+            paddingRight: '3%'
+        }
+
         let jsx = this.props.orchestraRoles.map( item => {
             return (
-                <ListItem key={item.uid} divider={true}>
-                    <ListItemText primary={item.name}/>
-                    <ListItemSecondaryAction>
+                <ListItem key={item.uid}>
+                    <Grid container style={{ width: '100%' }}
+                        direction="row"
+                        justify="space-between"
+                        alignItems="center">
+                        <Typography style={typographyStyle}> {item.name} </Typography>
                         <OrchestraMemberSelect value={GetOrchestraIdFromMap(this.props.orchestraChangeMap, item.uid)}
-                        onChange={(e) =>{this.props.onOrchestraChange(item.uid, e.target.value)}}
-                        orchestraMembers={this.props.orchestraMembers}/>
-                    </ListItemSecondaryAction>
+                            onChange={(e) => { this.props.onOrchestraChange(item.uid, e.target.value) }}
+                            orchestraMembers={this.props.orchestraMembers} />
+                    </Grid>
                 </ListItem>
             )
         })
@@ -135,7 +144,15 @@ class App extends React.Component {
     }
 
     getCastChangeListItemsJSX() {
-        let individualRolesSubheadingJSX = [(<ListSubheader key="individualrolessubheader"> Individual Roles </ListSubheader>)];
+        let typographyStyle = {
+            width: '45%',
+            paddingRight: '3%'
+        }
+
+        let individualRolesSubheadingJSX = [
+            (<ListSubheader disableSticky={true} key="individualrolessubheader"> Individual Roles </ListSubheader>),
+            (<Divider key="individualrolesdivider"/>)
+        ];
 
         let individualRoles = this.props.roles.filter( item => {
             return item.groupId === "-1";
@@ -143,36 +160,42 @@ class App extends React.Component {
 
         let individualRolesJSX = individualRoles.map( item => {
             return (
-                <ListItem key={item.uid} divider={true}>
-                    <ListItemText primary={item.name}/>
-                    <ListItemSecondaryAction>
-                        <CastMemberSelect castMembers={this.props.castMembers}
-                         value={GetCastIdFromMap(this.props.castChangeMap, item.uid)}
-                         onChange={(e) => {this.props.onCastChange(item.uid, e.target.value)}}/>
-                    </ListItemSecondaryAction>
+                <ListItem key={item.uid}>
+                    <Grid container style={{width: '100%'}}
+                        direction="row"
+                        justify="space-between"
+                        alignItems="center">
+                        <Typography style={typographyStyle}> {item.name} </Typography>
+                            <CastMemberSelect castMembers={this.props.castMembers}
+                                value={GetCastIdFromMap(this.props.castChangeMap, item.uid)}
+                                onChange={(e) => { this.props.onCastChange(item.uid, e.target.value) }} />
+                    </Grid>
+                    
                 </ListItem>
             )
         })
 
-        let roleGroupSubheadingJSX = [(<ListSubheader key="rolegroupssubheader"> Role Groups </ListSubheader>)];
+        let roleGroupSubheadingJSX = [
+            (<ListSubheader key="rolegroupssubheader"> Role Groups </ListSubheader>),
+            (<Divider key="rolegroupsdivider"/>)
+        ];
 
         let roleGroupJSX = this.props.roleGroups.map ( item => {
             let relatedRoles = this.props.roles.filter( role => {
                 return role.groupId === item.uid;
             })
 
-            let primaryTypographyProps = {
-                nowrap: 'true'
-            }
-
             let relatedRolesJSX = relatedRoles.map( (role, index) => {
                 return (
                     <ListItem key={role.uid} style={{ paddingLeft: '8px' }}>
-                        <ListItemText primary={role.name} primaryTypographyProps={primaryTypographyProps}/>
-                        <ListItemSecondaryAction>
+                        <Grid container style={{ width: '100%' }}
+                            direction="row"
+                            justify="space-between"
+                            alignItems="center">
+                            <Typography style={typographyStyle}> {role.name} </Typography>
                             <CastMemberSelect castMembers={this.props.castMembers}
-                            value={GetCastIdFromMap(this.props.castChangeMap, role.uid)} />
-                        </ListItemSecondaryAction>
+                                value={GetCastIdFromMap(this.props.castChangeMap, role.uid)} />
+                        </Grid>
                     </ListItem>
                 )  
             })
@@ -180,11 +203,16 @@ class App extends React.Component {
             return (
                 <React.Fragment key={item.uid}>
                     <ListItem>
-                        <ListItemText primary={item.name}/>
-                        <ListItemSecondaryAction>
+                        <Grid container style={{ width: '100%' }}
+                            direction="row"
+                            justify="space-between"
+                            alignItems="center">
+                            <Typography style={typographyStyle}> {item.name} </Typography>
+
                             <CastGroupChooser castGroups={this.props.castGroups}
                                 onChoose={(groupId) => { this.props.onGroupCastChange(item.uid, groupId) }} />
-                        </ListItemSecondaryAction>
+                        </Grid>
+
                     </ListItem>
                     {relatedRolesJSX}
                 </React.Fragment>
