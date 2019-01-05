@@ -6,6 +6,8 @@ import url from 'url';
 import copy from 'copy-text-to-clipboard';
 
 import CastChangeEntryFactory from '../factories/CastChangeEntryFactory';
+import PresetFactory from '../factories/PresetFactory';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 
 const baseURL = process.env.NODE_ENV === "development" ? 'http://localhost:8081' : window.location.href;
 
@@ -33,6 +35,11 @@ class AppContainer extends React.Component {
             isCheckingConnection: true,
             isConnectionBad: false,
             isConnectionValidationOverlayOpen: true,
+            presets: [],
+            isSavePresetDialogOpen: false,
+            informationSnackbar: { open: false, message: "", onClose: () => {} },
+            editPresetDialog: { open: false, preset: null, onCancel: () => {}, onDone: () => {} },
+            confirmationDialogComponent: null,
         }
 
         // Method Bindings.
@@ -59,6 +66,14 @@ class AppContainer extends React.Component {
         this.handleConnectionValidationOverlayRetryButtonClick = this.handleConnectionValidationOverlayRetryButtonClick.bind(this);
         this.setConnectionState = this.setConnectionState.bind(this);
         this.handleGroupCastChange = this.handleGroupCastChange.bind(this);
+        this.handleSavePresetDialogOverwriteButtonClick = this.handleSavePresetDialogOverwriteButtonClick.bind(this);
+        this.handleSavePresetDialogSaveButtonClick = this.handleSavePresetDialogSaveButtonClick.bind(this);
+        this.handleSavePresetButtonClick = this.handleSavePresetButtonClick.bind(this);
+        this.handleLoadPresetButtonClick = this.handleLoadPresetButtonClick.bind(this);
+        this.handleSavePresetDialogCancelButtonClick = this.handleSavePresetDialogCancelButtonClick.bind(this);
+        this.postInformationSnackbar = this.postInformationSnackbar.bind(this);
+        this.handleDeletePresetButtonClick = this.handleDeletePresetButtonClick.bind(this);
+        this.handleEditPresetButtonClick = this.handleEditPresetButtonClick.bind(this);
     }
 
     async componentDidMount() {
@@ -115,10 +130,142 @@ class AppContainer extends React.Component {
                 isConnectionBad={this.state.isConnectionBad}
                 isCheckingConnection={this.state.isCheckingConnection}
                 onConnectionValidationOverlayRetryButtonClick={this.handleConnectionValidationOverlayRetryButtonClick}
-                onGroupCastChange={this.handleGroupCastChange}/>
+                onGroupCastChange={this.handleGroupCastChange}
+                presets={this.state.presets}
+                onSavePresetDialogOverwriteButtonClick={this.handleSavePresetDialogOverwriteButtonClick}
+                onSavePresetDialogSaveButtonClick={this.handleSavePresetDialogSaveButtonClick}
+                onSavePresetButtonClick={this.handleSavePresetButtonClick}
+                isSavePresetDialogOpen={this.state.isSavePresetDialogOpen}
+                onLoadPresetButtonClick={this.handleLoadPresetButtonClick}
+                onSavePresetDialogCancelButtonClick={this.handleSavePresetDialogCancelButtonClick}
+                informationSnackbar={this.state.informationSnackbar}
+                onDeletePresetButtonClick={this.handleDeletePresetButtonClick}
+                onEditPresetButtonClick={this.handleEditPresetButtonClick}
+                editPresetDialog={this.state.editPresetDialog}
+                confirmationDialogComponent={this.state.confirmationDialogComponent}/>
             </React.Fragment>
             
         )
+    }
+
+    handleEditPresetButtonClick(uid) {
+        let presets = [...this.state.presets];
+        let preset = presets.find(item => {
+            return item.uid === uid;
+        })
+
+        let handleDone = (newName = "", newDetails = "") => {
+            let presetIndex = presets.findIndex( item => {
+                return item.uid === uid;
+            })
+
+            if (presetIndex !== -1) {
+                presets[presetIndex].name = newName;
+                presets[presetIndex].details = newDetails;
+            }
+
+            this.setState({
+                presets: presets,
+                editPresetDialog: { open: false }
+            })
+        }
+
+        if (preset !== undefined) {
+            this.setState({
+                editPresetDialog: {
+                    open: true,
+                    preset: preset,
+                    onCancel: () => { this.setState({ editPresetDialog: { open: false }}) },
+                    onDone: handleDone,
+                }
+            })
+        }
+    }
+
+    handleDeletePresetButtonClick(uid) {
+        let handleAffirmative = () => {
+            this.setState({ confirmationDialogComponent: null });
+
+            let presets = [...this.state.presets];
+            let presetIndex = presets.find(item => {
+                return item.uid === uid;
+            })
+
+            if (presetIndex !== -1) {
+                presets.splice(presetIndex, 1);
+                this.setState({
+                    presets: presets
+                });
+
+                this.postInformationSnackbar("Preset Deleted");
+            }
+        }
+
+        let handleNegative = () => {
+            this.setState({
+                confirmationDialogComponent: null,
+            })
+        }
+
+        // Trigger Dialog.
+        this.setState({
+            confirmationDialogComponent: (
+                <ConfirmationDialog title="Delete preset?" message="Are you sure you want to delete this Preset?"
+                onAffirmative={handleAffirmative} onNegative={handleNegative}/>
+            )
+        })
+
+        
+    }
+
+    handleSavePresetDialogCancelButtonClick() {
+        this.setState({ isSavePresetDialogOpen: false });
+    }
+
+    handleLoadPresetButtonClick(uid) {
+        let preset = this.state.presets.find(item => {
+            return item.uid === uid;
+        })
+
+        if (preset !== undefined) {
+            this.setState({
+                castChangeMap: preset.castChangeMap,
+                orchestraChangeMap: preset.orchestraChangeMap,
+            })
+
+            this.postInformationSnackbar(`${preset.name} preset loaded`)
+        }
+    }
+
+    handleSavePresetButtonClick() {
+        this.setState({ isSavePresetDialogOpen: true });
+    }
+
+    handleSavePresetDialogSaveButtonClick(name, details) {
+        let presets = [...this.state.presets];
+        presets.push(PresetFactory(name, details, this.state.castChangeMap, this.state.orchestraChangeMap));
+
+        this.setState({
+            presets: presets,
+            isSavePresetDialogOpen: false,
+        });
+    }
+
+    handleSavePresetDialogOverwriteButtonClick(uid) {
+        let presets = [...this.state.presets];
+
+        let existingPresetIndex = presets.findIndex( item => {
+            return item.uid === uid;
+        })
+
+        if (existingPresetIndex !== -1) {
+            presets[existingPresetIndex].castChangeMap = {...this.state.castChangeMap};
+            presets[existingPresetIndex].orchestraChangeMap = {...this.state.orchestraChangeMap};
+
+            this.setState({presets: presets});
+        }
+
+        this.setState({ isSavePresetDialogOpen: false })
     }
 
     async handleGroupCastChange(roleGroupId, castGroupId) {
@@ -301,6 +448,7 @@ class AppContainer extends React.Component {
         let data = {
             castChangeMap: this.state.castChangeMap,
             orchestraChangeMap: this.state.orchestraChangeMap,
+            presets: this.state.presets,
         }
 
         await axios.post(formatPath('/data'), data);
@@ -322,6 +470,16 @@ class AppContainer extends React.Component {
         this.setState({ castChangeMap: castChangeMap });
     }
 
+    postInformationSnackbar(message) {
+        this.setState({
+            informationSnackbar: {
+                open: true,
+                message: message,
+                onClose: () => { this.setState({ informationSnackbar:  { open: false, message: message, onClose: () => {} } })}
+            }
+        })
+    }
+
     async getData() {
         const response = await axios.get(formatPath('/data'));
 
@@ -337,6 +495,7 @@ class AppContainer extends React.Component {
                 orchestraMembers: data.orchestraMembers,
                 orchestraRoles: data.orchestraRoles,
                 orchestraChangeMap: data.orchestraChangeMap,
+                presets: data.presets,
             })
         }
     }

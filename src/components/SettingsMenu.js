@@ -9,6 +9,8 @@ import SoftResetIcon from '@material-ui/icons/SentimentDissatisfied';
 import HardResetIcon from '@material-ui/icons/SentimentVeryDissatisfied';
 import PowerIcon from '@material-ui/icons/PowerSettingsNew';
 import FileUploadButton from './FileUploadButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 let UploadFileIcon = (props) => {
     return (
@@ -20,15 +22,25 @@ let UploadFileIcon = (props) => {
 }
 
 class SettingsMenu extends React.Component {
+    constructor(props) {
+        super(props)
+
+        // Method Bindings.
+        this.getPresetItemsJSX = this.getPresetItemsJSX.bind(this);
+    }
     render() {
+        let settingsMenuGridStyle = {
+            width: '100vw',
+            height: '100vh',
+            display: 'grid',
+            gridTemplateRows: '[AppBar]auto [Content]1fr'
+        }
+
         return (
             <React.Fragment>
-                <Grid container style={{width: '100vw'}}
-                direction="column"
-                justify="flex-start"
-                alignItems="stretch">
-                    <Grid item>
-                        <AppBar position="relative">
+                <div style={settingsMenuGridStyle}>
+                    <div style={{ gridRow: 'AppBar' }}>
+                        <AppBar position="sticky">
                             <Toolbar>
                                 <IconButton onClick={this.props.onBackArrowClick}>
                                     <BackArrowIcon />
@@ -36,25 +48,26 @@ class SettingsMenu extends React.Component {
                                 <Typography variant="h6"> Settings </Typography>
                             </Toolbar>
                         </AppBar>
-                    </Grid>
+                    </div>
 
-                    <Grid item>
+
+                    <div style={{ gridRow: 'Content', overflowY: 'scroll' }}>
                         <List>
-                            <ListSubheader> Show File </ListSubheader>
+                            <ListSubheader disableSticky={true}> Show File </ListSubheader>
                             <ListItem>
                                 <ListItemIcon>
-                                    <UploadFileIcon/>
+                                    <UploadFileIcon />
                                 </ListItemIcon>
 
-                                <ListItemText primary="Upload showfile"/>
+                                <ListItemText primary="Upload showfile" />
 
                                 <ListItemSecondaryAction>
-                                    <FileUploadButton onFileUpload={this.props.onFileUpload}/> 
+                                    <FileUploadButton onFileUpload={this.props.onFileUpload} />
                                 </ListItemSecondaryAction>
 
                             </ListItem>
 
-                            <ListSubheader> Control </ListSubheader>
+                            <ListSubheader disableSticky={true}> Control </ListSubheader>
                             <ListItem>
                                 <ListItemIcon>
                                     <PowerIcon />
@@ -88,7 +101,7 @@ class SettingsMenu extends React.Component {
                                 </ListItemSecondaryAction>
                             </ListItem>
 
-                            <ListSubheader> Debug </ListSubheader>
+                            <ListSubheader disableSticky={true}> Debug </ListSubheader>
 
                             <ListItem>
                                 <ListItemIcon>
@@ -100,7 +113,11 @@ class SettingsMenu extends React.Component {
                                 </ListItemSecondaryAction>
                             </ListItem>
 
-                            <ListSubheader> About </ListSubheader>
+                            { this.props.presets.length > 0 && <ListSubheader disableSticky={true}> Manage Presets </ListSubheader> }
+                            
+                            {this.getPresetItemsJSX()}
+
+                            <ListSubheader disableSticky={true}> About </ListSubheader>
 
                             <ListItem>
                                 <ListItemIcon>
@@ -109,11 +126,32 @@ class SettingsMenu extends React.Component {
                                 <ListItemText secondary="Developed by Charlie Hall" />
                             </ListItem>
                         </List>
-                    </Grid>
-                </Grid>
+                    </div>
+                </div>
+                        
             </React.Fragment>
         )
 
+    }
+
+    getPresetItemsJSX() {
+        let jsx = this.props.presets.map( item => {
+            return (
+                <ListItem key={item.uid}>
+                    <ListItemText primary={item.name} secondary={item.details}/>
+                    <ListItemSecondaryAction>
+                        <IconButton>
+                            <EditIcon onClick={() => { this.props.onEditPresetButtonClick(item.uid)}}/>
+                        </IconButton>
+                        <IconButton onClick={() => { this.props.onDeletePresetButtonClick(item.uid)}}>
+                            <DeleteIcon/>
+                        </IconButton>
+                    </ListItemSecondaryAction>
+                </ListItem>
+            )
+        })
+
+        return jsx;
     }
 }
 
