@@ -11,6 +11,9 @@ import ConfirmationDialog from '../components/ConfirmationDialog';
 
 const baseURL = process.env.NODE_ENV === "development" ? 'http://localhost:8081' : window.location.href;
 
+let heartbeatIntervalId = -1;
+let heartbeatPace = 7500;
+
 let formatPath = (path) => {
     return url.resolve(baseURL,path);
 }
@@ -301,6 +304,7 @@ class AppContainer extends React.Component {
 
     setConnectionState(isConnected) {
         if (isConnected) {
+            startHeartbeat();
             this.setState({
                 isCheckingConnection: false,
                 isConnectionBad: false,
@@ -309,6 +313,7 @@ class AppContainer extends React.Component {
         }
 
         else {
+            stopHeartbeat();
             this.setState({ 
                 isCheckingConnection: false,
                 isConnectionBad: true,
@@ -328,7 +333,14 @@ class AppContainer extends React.Component {
             let result = await this.pingServer();
             this.setConnectionState(result);
         }   
+
+        else {
+            // Page has been backgrounded.
+            stopHeartbeat();
+        }
     }
+
+    
 
     async pingServer() {
         try {
@@ -498,6 +510,20 @@ class AppContainer extends React.Component {
                 presets: data.presets,
             })
         }
+    }
+}
+
+let startHeartbeat = () => {
+    stopHeartbeat();
+
+    heartbeatIntervalId = setInterval(() => {
+        axios.post(formatPath('/heartbeat'))
+    }, heartbeatPace);
+}
+
+let stopHeartbeat = () => {
+    if (heartbeatIntervalId !== -1) {
+        clearInterval(heartbeatIntervalId);
     }
 }
 
