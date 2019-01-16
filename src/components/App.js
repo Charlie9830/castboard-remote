@@ -312,7 +312,8 @@ class App extends React.Component {
                             alignItems="center">
                             <Typography style={typographyStyle}> {role.name} </Typography>
                             <CastMemberSelect castMembers={this.props.castMembers}
-                                value={GetCastIdFromMap(this.props.castChangeMap, role.uid)} />
+                                value={GetCastIdFromMap(this.props.castChangeMap, role.uid)}
+                                onChange={(e) => { this.props.onCastChange(role.uid, e.target.value)}} />
                         </Grid>
                     </ListItem>
                 )  
